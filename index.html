@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BTC/USD Prices</title>
+    <!-- CSS styles for the table -->
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      th, td {
+        border: 1px solid #bcbbbb;
+        text-align: left;
+        padding: 8px;
+      }
+
+      th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+      }
+    </style>
+    <!-- External script for Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <!-- Container for the Crypto App -->
+    <div id="cryptoApp" class="max-w-[1000px] mx-auto">
+      <!-- Title heading -->
+      <h1 class="font-bold text-3xl text-center text-blue-600 my-4">
+        Cryptocurrency Data
+      </h1>
+    </div>
+    <script>
+      // Array defining the fields to be displayed in the table
+      const displayFields = ["image", "symbol", "name", "summary"];
+
+      // Function to generate a table row for a cryptocurrency
+      const generateTableRow = (cryptoKey, cryptoData, index) => {
+        // Generate a row with cells for each field in displayFields
+        return `<tr>${displayFields.map((field) => generateTableCell(cryptoKey, field, cryptoData)).join("")}</tr>`;
+      };
+
+      // Function to generate a table cell for a specific field
+      const generateTableCell = (symbol, property, data) => {
+        // Function to get the content based on the property
+        const getCellContent = () => {
+          switch (property) {
+            case "image":
+              return `<img class="h-full w-auto" src="${data[property]}" />`;
+            case "symbol":
+              return symbol;
+            case "name":
+              return `<a class="text-blue-400 font-bold hover:underline" href="${data["website"]}" target="_blank">${data[property]}</a>`;
+            default:
+              return data[property];
+          }
+        };
+
+        // Determine if the cell is for the "image" property to add a specific class
+        const cellClass = property === "image" ? "w-16 " : "";
+
+        // Return the HTML for the table cell
+        return `<td class="${cellClass}p-2 align-top">${getCellContent()}</td>`;
+      };
+
+      // Function to create the entire crypto table
+      const createCryptoTable = (cryptoData) => {
+        // Log the received crypto data to the console
+        console.log(cryptoData);
+
+        // Function to generate all table rows
+        const generateTableRows = () => {
+          return Object.entries(cryptoData)
+            .map(([key, value], index) => generateTableRow(key, value, index))
+            .join("");
+        };
+
+        // Function to generate the table header row
+        const generateTableHeaderRow = () => {
+          return `<tr>${displayFields
+            .map(
+              (field) => `<th class="font-bold bg-gray-200">${field === "image" ? "" : field}</th>`
+            )
+            .join("")}</tr>`;
+        };
+
+        // Generate the HTML for all table rows
+        const tableRows = generateTableRows();
+        // Generate the HTML for the table header row
+        const tableHeaderRow = generateTableHeaderRow();
+
+        // Combine the header row and data rows to create the complete table HTML
+        const completeTable = `<table>${tableHeaderRow}${tableRows}</table>`;
+
+        // Insert the complete table HTML into the "cryptoApp" div
+        document.getElementById("cryptoApp").insertAdjacentHTML("beforeend", completeTable);
+      };
+
+      // URL to fetch cryptocurrency data
+      const apiUrl = "https://api.mtw-testnet.com/assets/all";
+      // Fetch data from the API
+      fetch(apiUrl)
+        .then((response) => response.json())
+        .then((cryptoData) => createCryptoTable(cryptoData))
+        .catch((error) => console.log(error));
+    </script>
+    <!-- External script for MoreThanWallet AppStore functionality -->
+    <script src="https://morethanwallet.com/appstore/index.js"></script>
+  </body>
+</html>
